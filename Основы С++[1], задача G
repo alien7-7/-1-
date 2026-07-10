@@ -1,0 +1,27 @@
+#include <bits/stdc++.h>
+using namespace std;
+ 
+int main(){
+    long long n, k;
+    cin >> n >> k;
+ 
+    long long remaining = k;
+    long long totalDistance = 0;
+    long long d = 1;
+ 
+    while(remaining > 0){
+        long long cellsAtD = 4*n + 4*d - 4;
+        if(cellsAtD >= remaining){
+            totalDistance += remaining * d;
+            remaining = 0;
+        } else {
+            totalDistance += cellsAtD * d;
+            remaining -= cellsAtD;
+        }
+        d++;
+    }
+ 
+    cout << totalDistance << endl;
+ 
+    return 0;
+}
