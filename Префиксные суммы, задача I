@@ -1,0 +1,66 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    ll x;
+    int k;
+    cin >> x >> k;
+    
+    vector<vector<pair<ll,ll>>> segs(k);
+    
+    for (int li = 0; li < k; li++) {
+        int l;
+        cin >> l;
+        vector<ll> a(l);
+        for (auto &v : a) cin >> v;
+        
+        vector<ll> P(l+1);
+        P[0] = 0;
+        for (int t = 1; t <= l; t++) P[t] = P[t-1] + a[t-1];
+        
+        ll prevCheckpointVal = 0;
+        ll runningMax = 0;
+        ll segMin = 0;
+        
+        for (int t = 1; t <= l; t++) {
+            segMin = min(segMin, P[t]);
+            if (P[t] > runningMax) {
+                ll T = prevCheckpointVal - segMin;
+                ll gain = P[t] - prevCheckpointVal;
+                segs[li].push_back({T, gain});
+                prevCheckpointVal = P[t];
+                runningMax = P[t];
+                segMin = P[t];
+            }
+        }
+    }
+    
+    priority_queue<tuple<ll,int,int>, vector<tuple<ll,int,int>>, greater<>> pq;
+    
+    for (int li = 0; li < k; li++) {
+        if (!segs[li].empty()) {
+            pq.push({segs[li][0].first, li, 0});
+        }
+    }
+    
+    while (!pq.empty()) {
+        auto [T, li, si] = pq.top();
+        pq.pop();
+        if (x >= T) {
+            x += segs[li][si].second;
+            if (si + 1 < (int)segs[li].size()) {
+                pq.push({segs[li][si+1].first, li, si+1});
+            }
+        } else {
+            break;
+        }
+    }
+    
+    cout << x << endl;
+    
+    return 0;
+}
