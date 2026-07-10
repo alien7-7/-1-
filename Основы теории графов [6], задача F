@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, m;
+    cin >> n >> m;
+
+    vector<string> grid(n);
+    for (int i = 0; i < n; i++) {
+        cin >> grid[i];
+    }
+
+    vector<vector<char>> assigned(n, vector<char>(m, 0));
+    queue<pair<int,int>> q;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            char c = grid[i][j];
+            if (c != '.' && c != '#') {
+                assigned[i][j] = 1;
+                q.push({i, j});
+            }
+        }
+    }
+
+    int dr[4] = {-1, 1, 0, 0};
+    int dc[4] = {0, 0, -1, 1};
+
+    while (!q.empty()) {
+        auto [r, c] = q.front();
+        q.pop();
+        char label = grid[r][c];
+        for (int dir = 0; dir < 4; dir++) {
+            int nr = r + dr[dir];
+            int nc = c + dc[dir];
+            if (nr < 0 || nr >= n || nc < 0 || nc >= m) continue;
+            if (grid[nr][nc] != '.') continue;
+            if (assigned[nr][nc]) continue;
+            grid[nr][nc] = label;
+            assigned[nr][nc] = 1;
+            q.push({nr, nc});
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        cout << grid[i] << '\n';
+    }
+
+    return 0;
+}
