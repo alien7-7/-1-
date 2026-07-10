@@ -1,0 +1,79 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int K;
+    cin >> K;
+
+    vector<int> route(K + 1), other(K + 1);
+    const int MAXR = 2001;
+    vector<vector<int>> byRoute(MAXR + 1);
+
+    for (int i = 1; i <= K; i++) {
+        cin >> route[i] >> other[i];
+        byRoute[route[i]].push_back(i);
+    }
+
+    int T, S1, S2;
+    cin >> T >> S1 >> S2;
+
+    vector<int> dist(K + 1, -1);
+    vector<int> parent(K + 1, 0);
+    queue<int> q;
+
+    int foundBus = -1;
+
+    auto tryDiscover = [&](int j, int fromState) -> bool {
+        if (dist[j] != -1) return false;
+        dist[j] = dist[fromState] + 1;
+        parent[j] = fromState;
+        if (route[j] == T || other[j] == T) {
+            foundBus = j;
+            return true;
+        }
+        q.push(j);
+        return false;
+    };
+
+    dist[0] = 0; 
+    bool done = false;
+    for (int idx : byRoute[S1]) {
+        if (tryDiscover(idx, 0)) { done = true; break; }
+    }
+    if (!done) {
+        for (int idx : byRoute[S2]) {
+            if (tryDiscover(idx, 0)) { done = true; break; }
+        }
+    }
+
+    while (!done && !q.empty()) {
+        int u = q.front();
+        q.pop();
+        for (int idx : byRoute[route[u]]) {
+            if (tryDiscover(idx, u)) { done = true; break; }
+        }
+        if (done) break;
+        for (int idx : byRoute[other[u]]) {
+            if (tryDiscover(idx, u)) { done = true; break; }
+        }
+    }
+
+    if (foundBus == -1) {
+        cout << "IMPOSSIBLE\n";
+    } else {
+        vector<int> path;
+        int cur = foundBus;
+        while (cur != 0) {
+            path.push_back(cur);
+            cur = parent[cur];
+        }
+        reverse(path.begin(), path.end());
+        cout << path.size() << '\n';
+        for (int b : path) cout << b << '\n';
+    }
+
+    return 0;
+}
