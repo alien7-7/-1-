@@ -1,0 +1,75 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+ 
+static const int IN_BUF_SIZE = 1 << 16;
+static char inBuf[IN_BUF_SIZE];
+static int inPos = 0, inLen = 0;
+
+inline int gc() {
+    if (inPos == inLen) {
+        inLen = (int)fread(inBuf, 1, IN_BUF_SIZE, stdin);
+        inPos = 0;
+        if (inLen == 0) return -1; // EOF
+    }
+    return inBuf[inPos++];
+}
+
+inline long long readLL() {
+    int c = gc();
+    while (c != '-' && (c < '0' || c > '9')) c = gc();
+    bool neg = false;
+    if (c == '-') { neg = true; c = gc(); }
+    long long x = 0;
+    while (c >= '0' && c <= '9') {
+        x = x * 10 + (c - '0');
+        c = gc();
+    }
+    return neg ? -x : x;
+}
+
+
+static const int OUT_BUF_SIZE = 1 << 16;
+static char outBuf[OUT_BUF_SIZE];
+static int outPos = 0;
+
+inline void flushOut() {
+    fwrite(outBuf, 1, outPos, stdout);
+    outPos = 0;
+}
+
+inline void writeLL(long long x) {
+    if (outPos + 24 > OUT_BUF_SIZE) flushOut();
+    if (x == 0) {
+        outBuf[outPos++] = '0';
+    } else {
+        char tmp[24];
+        int len = 0;
+        while (x > 0) {
+            tmp[len++] = (char)('0' + (x % 10));
+            x /= 10;
+        }
+        while (len > 0) outBuf[outPos++] = tmp[--len];
+    }
+    outBuf[outPos++] = '\n';
+}
+
+int main() {
+    int n = (int)readLL();
+
+    for (int i = 0; i < n; i++) {
+        long long x1 = readLL();
+        long long y1 = readLL();
+        long long x2 = readLL();
+        long long y2 = readLL();
+
+        long long dx = llabs(x2 - x1);
+        long long dy = llabs(y2 - y1);
+
+        long long g = std::__gcd(dx, dy);
+        writeLL(g + 1);
+    }
+
+    flushOut();
+    return 0;
+}
